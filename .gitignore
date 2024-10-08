@@ -6,3 +6,4 @@
 /data/
 sandbox*
 test*
+__pycache__/
