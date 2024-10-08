@@ -4,15 +4,13 @@ import openpyxl as opyxl
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import utility
-
-
-
-    
-
 # to install: holidays, openpyxl
 
+
+
+
 # Next month
-next_month = datetime.now() + relativedelta(months=0)
+next_month = datetime.now() + relativedelta(months=1)
 
 
 # Slot ranges
@@ -56,7 +54,10 @@ ws = wb.create_sheet(title="Attendees contraints")
 attendees = utility.read_attendees()
 
 ws["B3"] = "Name"
-ws.cell(row=3, column=2).font = opyxl.styles.Font(bold=True)
+ws.cell(row=3, column=2).font = opyxl.styles.Font(bold=True, underline="single")
+ws.cell(row=3, column=2).alignment = opyxl.styles.Alignment(horizontal="center", vertical="center")
+ws.column_dimensions[opyxl.utils.get_column_letter(2)].width = 11.5
+
 
 # Insert attendees' names
 for i, attendee in enumerate(attendees):
