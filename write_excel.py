@@ -31,7 +31,7 @@ wb = opyxl.Workbook()
 
 # Global constraints
 ws = wb.active
-ws.title = f"Global constraints"
+ws.title = "Global constraints"
 
 # Insert month
 ws.cell(row=2, column=1).value = f"{next_month.strftime('%B')} {next_month.year}"
