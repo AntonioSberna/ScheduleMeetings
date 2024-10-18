@@ -32,8 +32,7 @@ year = sh["A2"].value.split()[1]
 
 # Read global constraints and creation of time slots
 time_slots = []
-max_col = sh[3][-1].column
-for row in sh.iter_rows(min_row=5, max_row=sh.max_row, min_col=2, max_col=max_col):
+for row in sh.iter_rows(min_row=5, max_row=sh.max_row, min_col=2, max_col=sh.max_column):
     for cell in row:
         col = cell.fill.start_color.index[2:]
         if col == color_workday and cell.value != "X":
@@ -54,6 +53,7 @@ for row in sh.iter_rows(min_row=4, max_row=sh.max_row, min_col=2, max_col=2):
 
 # Read attendees constraints
 sh = wb["Attendees constraints"]
+
 
 
 wb.close()
