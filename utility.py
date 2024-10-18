@@ -11,6 +11,7 @@ def write_days_holidays(ws, next_month, n_rows, weekly_day_off, **kwargs):
 
     color_holidays = kwargs.get("color_holidays", "9a0000")
     color_workday = kwargs.get("color_workday", "009a00")
+    color_error = kwargs.get("color_error", "C0C0C0")
     column_width = kwargs.get("column_width", 6.75)
     start_row = kwargs.get("start_row", 4)
     start_col = kwargs.get("start_col", 1)
@@ -46,7 +47,7 @@ def write_days_holidays(ws, next_month, n_rows, weekly_day_off, **kwargs):
 
     # Conditional formatting
     red_fill = opyxl.styles.PatternFill(start_color=color_holidays, end_color=color_holidays, fill_type="solid")
-    gray_fill = opyxl.styles.PatternFill(start_color="C0C0C0", end_color="C0C0C0", fill_type="solid")
+    gray_fill = opyxl.styles.PatternFill(start_color=color_error, end_color=color_error, fill_type="solid")
     rule_red = opyxl.formatting.rule.CellIsRule(operator='equal', formula=['"X"'], fill=red_fill)
     first_cell = f"{opyxl.utils.get_column_letter(start_col+1)}{start_row+1}"
     rule_gray = opyxl.formatting.rule.FormulaRule(formula=[f'AND({first_cell}<>"X", {first_cell}<>"")'], fill=gray_fill)
