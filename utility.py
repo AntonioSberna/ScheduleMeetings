@@ -39,7 +39,11 @@ def write_days_holidays(ws, next_month, n_rows, weekly_day_off, **kwargs):
                 ws.cell(row=start_row+n_time_slot, column=col).fill = opyxl.styles.PatternFill(start_color=color_holidays, end_color=color_holidays, fill_type="solid")
             else:
                 ws.cell(row=start_row+n_time_slot, column=col).fill = opyxl.styles.PatternFill(start_color=color_workday, end_color=color_workday, fill_type="solid")
-    
+
+        # Unlock cells to be modified
+        for n_time_slot in range(n_rows):
+            ws.cell(row=start_row+n_time_slot+1, column=col).protection = opyxl.styles.Protection(locked=False)
+
     # Conditional formatting
     red_fill = opyxl.styles.PatternFill(start_color=color_holidays, end_color=color_holidays, fill_type="solid")
     gray_fill = opyxl.styles.PatternFill(start_color="C0C0C0", end_color="C0C0C0", fill_type="solid")
@@ -55,6 +59,10 @@ def write_days_holidays(ws, next_month, n_rows, weekly_day_off, **kwargs):
     for row in ws[f"{opyxl.utils.get_column_letter(start_col)}{start_row-1}:{opyxl.utils.get_column_letter(days_in_month + start_col)}{n_rows + start_row}"]:
         for cell in row:
             cell.border = border
+
+
+    ws.protection.sheet = True
+    ws.protection.password = 'passwd'
     pass       
 
 
