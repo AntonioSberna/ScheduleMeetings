@@ -83,7 +83,16 @@ ws.cell(row=start_row-1, column=2).alignment = opyxl.styles.Alignment(horizontal
 ws.column_dimensions[opyxl.utils.get_column_letter(2)].width = 11.5
 
 
+# Settings sheet
+ws = wb.create_sheet(title="Settings")
+# Color samples (da sistemare)
+ws["AS42"].fill = opyxl.styles.PatternFill(start_color="9a0000", end_color="9a0000", fill_type="solid")
+ws["AS43"].fill = opyxl.styles.PatternFill(start_color="009a00", end_color="009a00", fill_type="solid")
+ws["AS44"].fill = opyxl.styles.PatternFill(start_color="C0C0C0", end_color="C0C0C0", fill_type="solid")
+ws.sheet_state = 'hidden'
+
 # Salva il file
+# Add check if file already exists
 wb.save("./input_data.xlsx")
 wb.close()
 
