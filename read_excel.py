@@ -53,7 +53,12 @@ for row in sh.iter_rows(min_row=4, max_row=sh.max_row, min_col=2, max_col=2):
 
 # Read attendees constraints
 sh = wb["Attendees constraints"]
-
+attendee_constraints = {}
+for row in sh.iter_rows(min_row=4, max_row=sh.max_row, min_col=3, max_col=sh.max_column):
+    attendee_constraints[sh.cell(row=row[0].row, column=2).value] = []
+    for cell in row:
+        if cell.value is not None and cell.value.capitalize() == "X":
+            attendee_constraints[sh.cell(row=cell.row, column=2).value].append(sh.cell(row=2, column=cell.column).value)
 
 
 wb.close()
