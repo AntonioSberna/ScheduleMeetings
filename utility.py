@@ -61,6 +61,11 @@ def write_days_holidays(ws, next_month, n_rows, weekly_day_off, **kwargs):
         for cell in row:
             cell.border = border
 
+    # Color samples
+    ws["AS42"].fill = opyxl.styles.PatternFill(start_color=color_holidays, end_color=color_holidays, fill_type="solid")
+    ws["AS43"].fill = opyxl.styles.PatternFill(start_color=color_workday, end_color=color_workday, fill_type="solid")
+    ws["AS44"].fill = opyxl.styles.PatternFill(start_color=color_error, end_color=color_error, fill_type="solid")
+
 
     ws.protection.sheet = True
     ws.protection.password = 'passwd'
