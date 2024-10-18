@@ -46,7 +46,7 @@ utility.write_days_holidays(ws, next_month, len(time_slots), weekly_day_off, sta
 # Insert timeslots
 ws.column_dimensions["A"].width = 11.5
 for i, time_slot in enumerate(time_slots, start=1):
-    ws.cell(row=start_row + i, column=1).value = f"{time_slot} - {time_slots[i] if i < len(time_slots) else 'End'}"
+    ws.cell(row=start_row + i, column=1).value = f"{time_slot} - {time_slots[i] if i < len(time_slots) else f"{slot_ranges[-1][-1]}:00"}" # can be improved the last slot's end
 
 
 
