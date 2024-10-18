@@ -39,7 +39,7 @@ for row in sh.iter_rows(min_row=5, max_row=sh.max_row, min_col=2, max_col=max_co
         if col == color_workday and cell.value != "X":
             time_slots.append(sh.cell(row=3, column=cell.column).value + " / " + sh.cell(row=cell.row, column=1).value) # così è un casino, ma non so come fare meglio
         if cell.value is not None and cell.value != "X":
-            raise ValueError(f"Error in the excel file day {sh.cell(row=3, column=cell.column).value}, timeslot {sh.cell(row=cell.row, column=1).value}")
+            raise ValueError(f"Error in the Global Constraints - day {sh.cell(row=3, column=cell.column).value}, timeslot {sh.cell(row=cell.row, column=1).value}")
 
 
 
