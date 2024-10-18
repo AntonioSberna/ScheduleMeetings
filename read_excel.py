@@ -13,24 +13,22 @@ attendees = utility.read_attendees()
 
 
 wb = opyxl.load_workbook(excel_file, data_only=True)
-sh = wb["Settings"]
 
 # Read colors legend
+sh = wb["Settings"]
 color_holidays = sh["AS42"].fill.start_color.index[2:]
 color_workday = sh["AS43"].fill.start_color.index[2:]
 color_error = sh["AS44"].fill.start_color.index[2:]
 
 
+# Read global constraints 
 sh = wb["Global constraints"]
 
 # I don't know if they are needed
 month = sh["A2"].value.split()[0]
 year = sh["A2"].value.split()[1]
 
-
-
-
-# Read global constraints and creation of time slots
+# Creation of time slots
 time_slots = []
 for row in sh.iter_rows(min_row=5, max_row=sh.max_row, min_col=2, max_col=sh.max_column):
     for cell in row:
@@ -59,6 +57,5 @@ for row in sh.iter_rows(min_row=4, max_row=sh.max_row, min_col=3, max_col=sh.max
     for cell in row:
         if cell.value is not None and cell.value.capitalize() == "X":
             attendee_constraints[sh.cell(row=cell.row, column=2).value].append(sh.cell(row=2, column=cell.column).value)
-
 
 wb.close()
