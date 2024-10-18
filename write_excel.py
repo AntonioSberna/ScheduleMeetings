@@ -52,7 +52,7 @@ for i, time_slot in enumerate(time_slots, start=1):
 
 
 # Team dayoff
-ws = wb.create_sheet(title="Attendees contraints")
+ws = wb.create_sheet(title="Attendees constraints")
 attendees = utility.read_attendees()
 
 start_row = 4
