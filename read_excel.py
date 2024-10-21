@@ -59,3 +59,40 @@ for row in sh.iter_rows(min_row=4, max_row=sh.max_row, min_col=3, max_col=sh.max
             attendee_constraints[sh.cell(row=cell.row, column=2).value].append(sh.cell(row=2, column=cell.column).value)
 
 wb.close()
+
+
+
+
+from ortools.sat.python import cp_model
+model = cp_model.CpModel()
+
+# Creation of DVs
+meeting_slot = {}
+for meeting in meet_attend.keys():
+    for j in range(len(time_slots)):
+        meeting_slot[(meeting, j)] = model.NewBoolVar(f'riunione_{meeting}_slot_{time_slots[j]}')
+
+# Constraint 1: Each meeting must be assigned to exactly one slot
+for meeting in meet_attend.keys():
+    model.Add(sum(meeting_slot[(meeting, j)] for j in range(len(time_slots))) == 1)
+
+# Constraint 2: A person cannot attend two meetings in the same slot
+for attendee in attendees:
+    for j in range(len(time_slots)):
+        model.Add(sum(meeting_slot[(meeting, j)] for meeting in meet_attend
+                        if attendee in meet_attend[meeting]) <= 1)
+
+# Constraint 3: Personal constraints
+
+solver = cp_model.CpSolver()
+status = solver.Solve(model)
+
+
+if status == cp_model.OPTIMAL:
+    print('Meetings arrangement found:')
+    for meeting in meet_attend.keys():
+        for j in range(len(time_slots)):
+            if solver.Value(meeting_slot[(meeting, j)]):
+                print(f'{meeting} on {time_slots[j]}')
+else:
+    print('No optimal solution found.')
