@@ -6,4 +6,7 @@
 /data/
 sandbox*
 test*
+
+
 __pycache__/
+.vscode/
