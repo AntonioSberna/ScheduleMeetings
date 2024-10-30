@@ -25,7 +25,7 @@ weekly_day_off = {"Friday", "Saturday", "Sunday"}
 
 
 # Create a attendees sheet if not exists
-if not os.path.exists("input_data_filled.xlsx"):
+if not os.path.exists("attendees.xlsx"):
     wb = opyxl.Workbook()
     ws = wb.active
     ws.title = "attendees"
