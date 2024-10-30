@@ -61,7 +61,7 @@ for row in sh.iter_rows(min_row=4, max_row=sh.max_row, min_col=3, max_col=sh.max
         if cell.value is not None and cell.value.capitalize() == "X":
             attendee_constraints[sh.cell(row=cell.row, column=2).value].append(sh.cell(row=2, column=cell.column).value)
 
-wb.close()
+# wb.close()
 
 
 # Data post-processing
@@ -107,11 +107,48 @@ solver = cp_model.CpSolver()
 status = solver.Solve(model)
 
 
+# Write the solution in the excel file
+wb = opyxl.load_workbook(excel_file)
+result_sheet = "Meetings arrangement"
+# Create Meetings arrangement sheet
+if result_sheet in wb.sheetnames:
+    del wb[result_sheet]
+
+wb.create_sheet(result_sheet)
+sh = wb[result_sheet]
+
+# Merge two columns 
+sh.merge_cells('B2:D2')
+sh.merge_cells('C3:D3')
+sh.cell(row=2, column=2).value = "Meetings arrangement"
+sh.cell(row=3, column=2).value = "Meeting"
+sh.cell(row=3, column=3).value = "Time slot"
+
 if status == cp_model.OPTIMAL:
-    print('Meetings arrangement found:')
+    row = 4
     for meeting in meet_attend.keys():
         for time_slot in time_slots:
             if solver.Value(meeting_slot[(meeting, time_slot)]):
-                print(f'{meeting} on {time_slot}')
+                sh.cell(row=row, column=2).value = meeting
+                sh.cell(row=row, column=3).value = time_slot
+                row += 1
 else:
-    print('No optimal solution found.')
+    sh.cell(row=4, column=2).value = "No optimal solution found."
+
+# Save the excel file if it is not open, otherwise close it and save it
+while True:
+    try:
+        wb.save(excel_file)
+        wb.close()
+        break
+    except PermissionError:
+        input(f"Please close the file {excel_file} and press Enter to continue...")
+
+# if status == cp_model.OPTIMAL:
+#     print('Meetings arrangement found:')
+#     for meeting in meet_attend.keys():
+#         for time_slot in time_slots:
+#             if solver.Value(meeting_slot[(meeting, time_slot)]):
+#                 print(f'{meeting} on {time_slot}')
+# else:
+#     print('No optimal solution found.')
