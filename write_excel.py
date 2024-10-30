@@ -1,5 +1,6 @@
 
 
+import os 
 import openpyxl as opyxl
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -23,6 +24,15 @@ weekly_day_off = {"Friday", "Saturday", "Sunday"}
 
 
 
+# Create a attendees sheet if not exists
+if not os.path.exists("input_data_filled.xlsx"):
+    wb = opyxl.Workbook()
+    ws = wb.active
+    ws.title = "attendees"
+    ws["C2"] = "Attendees"
+    ws["C2"].font = opyxl.styles.Font(bold=True)
+    wb.save("attendees.xlsx")
+    wb.close()
 
 
 
@@ -54,6 +64,9 @@ for i, time_slot in enumerate(time_slots, start=1):
 # Team dayoff
 ws = wb.create_sheet(title="Attendees constraints")
 attendees = utility.read_attendees()
+
+if attendees is []:
+    raise ValueError("No attendees found in the attendees.xlsx file")
 
 start_row = 4
 # Insert names
@@ -95,5 +108,7 @@ ws.sheet_state = 'hidden'
 # Add check if file already exists
 wb.save("./input_data.xlsx")
 wb.close()
+
+
 
 
