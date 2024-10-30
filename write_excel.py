@@ -33,6 +33,7 @@ if not os.path.exists("attendees.xlsx"):
     ws["C2"].font = opyxl.styles.Font(bold=True)
     wb.save("attendees.xlsx")
     wb.close()
+    raise ValueError("attendees.xlsx file created. Please insert attendees and run the script again")
 
 
 
@@ -65,7 +66,7 @@ for i, time_slot in enumerate(time_slots, start=1):
 ws = wb.create_sheet(title="Attendees constraints")
 attendees = utility.read_attendees()
 
-if attendees is []:
+if len(attendees) == 0:
     raise ValueError("No attendees found in the attendees.xlsx file")
 
 start_row = 4
