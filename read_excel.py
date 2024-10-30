@@ -46,7 +46,10 @@ sh = wb["Groups compositions"]
 meet_attend = {}
 for row in sh.iter_rows(min_row=4, max_row=sh.max_row, min_col=2, max_col=2):
     for cell in row:
-        meet_attend[cell.value] = [sh.cell(row=cell.row, column=col).value for col in range(3, sh.max_column + 1)]
+        meet_attend[cell.value] = []
+        for col in range(3, sh.max_column + 1):
+            if sh.cell(row=cell.row, column=col).value is not None:
+                meet_attend[cell.value].append(sh.cell(row=cell.row, column=col).value)
 
 
 # Read attendees constraints
@@ -61,28 +64,44 @@ for row in sh.iter_rows(min_row=4, max_row=sh.max_row, min_col=3, max_col=sh.max
 wb.close()
 
 
+# Data post-processing
+
+# Index of time slots for each participant based on their constraints
+ind_per_part = {}
+for nome, date in attendee_constraints.items():
+    ind_per_part[nome] = []
+    for data in date:
+        ind_per_part[nome].extend([i for i, slot in enumerate(time_slots) if slot.startswith(data)])
 
 
 from ortools.sat.python import cp_model
 model = cp_model.CpModel()
 
+
 # Creation of DVs
 meeting_slot = {}
 for meeting in meet_attend.keys():
-    for j in range(len(time_slots)):
-        meeting_slot[(meeting, j)] = model.NewBoolVar(f'riunione_{meeting}_slot_{time_slots[j]}')
+    for time_slot in time_slots:
+        meeting_slot[(meeting, time_slot)] = model.NewBoolVar(f'meeting_{meeting}_timeslot_{time_slot}')
 
-# Constraint 1: Each meeting must be assigned to exactly one slot
+# # Constraint 1: Each meeting must be assigned to exactly one slot
 for meeting in meet_attend.keys():
-    model.Add(sum(meeting_slot[(meeting, j)] for j in range(len(time_slots))) == 1)
+    model.Add(sum(meeting_slot[(meeting, time_slot)] for time_slot in time_slots) == 1)
 
 # Constraint 2: A person cannot attend two meetings in the same slot
 for attendee in attendees:
-    for j in range(len(time_slots)):
-        model.Add(sum(meeting_slot[(meeting, j)] for meeting in meet_attend
+    for time_slot in time_slots:
+        model.Add(sum(meeting_slot[(meeting, time_slot)] for meeting in meet_attend
                         if attendee in meet_attend[meeting]) <= 1)
+        
 
 # Constraint 3: Personal constraints
+for meeting in meet_attend:
+    for attendee in meet_attend[meeting]:
+        if len(ind_per_part[attendee]) > 0:
+            for j in ind_per_part[attendee]:
+                model.Add(meeting_slot[(meeting, time_slots[j])] == 0)
+
 
 solver = cp_model.CpSolver()
 status = solver.Solve(model)
@@ -91,8 +110,8 @@ status = solver.Solve(model)
 if status == cp_model.OPTIMAL:
     print('Meetings arrangement found:')
     for meeting in meet_attend.keys():
-        for j in range(len(time_slots)):
-            if solver.Value(meeting_slot[(meeting, j)]):
-                print(f'{meeting} on {time_slots[j]}')
+        for time_slot in time_slots:
+            if solver.Value(meeting_slot[(meeting, time_slot)]):
+                print(f'{meeting} on {time_slot}')
 else:
     print('No optimal solution found.')
