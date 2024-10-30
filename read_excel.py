@@ -3,10 +3,11 @@
 
 import openpyxl as opyxl
 import utility
+from ortools.sat.python import cp_model
 
 
 
-excel_file = "input_data_filled.xlsx"
+excel_file = "./input_data.xlsx"
 
 # Read attendees names
 attendees = utility.read_attendees()
@@ -74,7 +75,6 @@ for nome, date in attendee_constraints.items():
         ind_per_part[nome].extend([i for i, slot in enumerate(time_slots) if slot.startswith(data)])
 
 
-from ortools.sat.python import cp_model
 model = cp_model.CpModel()
 
 
@@ -102,7 +102,7 @@ for meeting in meet_attend:
             for j in ind_per_part[attendee]:
                 model.Add(meeting_slot[(meeting, time_slots[j])] == 0)
 
-
+# Run the solver
 solver = cp_model.CpSolver()
 status = solver.Solve(model)
 
@@ -114,6 +114,7 @@ result_sheet = "Meetings arrangement"
 if result_sheet in wb.sheetnames:
     del wb[result_sheet]
 
+# Create the sheet for the results
 wb.create_sheet(result_sheet)
 sh = wb[result_sheet]
 
@@ -124,6 +125,7 @@ sh.cell(row=2, column=2).value = "Meetings arrangement"
 sh.cell(row=3, column=2).value = "Meeting"
 sh.cell(row=3, column=3).value = "Time slot"
 
+# Write the solution in the excel file
 if status == cp_model.OPTIMAL:
     row = 4
     for meeting in meet_attend.keys():
